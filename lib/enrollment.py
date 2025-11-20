@@ -3,6 +3,7 @@ class Student:
     def __init__(self, name):
         self.name = name
         self._enrollments = []
+        self._grades = {}  # key: enrollment, value: grade
 
     def enroll(self, course):
         if isinstance(course, Course):
@@ -14,6 +15,15 @@ class Student:
 
     def get_enrollments(self):
         return self._enrollments.copy()
+
+    def course_count(self):
+        return len(self._enrollments)  # returns total number of courses student is enrolled in
+
+    def aggregate_average_grade(self):
+        total_grades = sum(self._grades.values())  # sum all grade values
+        num_courses = len(self._grades)  # count total courses with grades
+        average_grade = total_grades / num_courses  # calculate average
+        return average_grade
 
 class Course:
     def __init__(self, title):
@@ -45,3 +55,11 @@ class Enrollment:
 
     def get_enrollment_date(self):
         return self._enrollment_date
+
+    @classmethod
+    def aggregate_enrollments_per_day(cls):
+        enrollment_count = {}  # dictionary to store date: count pairs
+        for enrollment in cls.all:  # iterate through all enrollments
+            date = enrollment.get_enrollment_date().date()  # get date without time
+            enrollment_count[date] = enrollment_count.get(date, 0) + 1  # increment count for this date
+        return enrollment_count
